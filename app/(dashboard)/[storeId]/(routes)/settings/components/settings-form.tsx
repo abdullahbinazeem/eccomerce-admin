@@ -69,12 +69,14 @@ export const SettingsForm: React.FC<SettingFormProps> = ({ initialData }) => {
 
       router.refresh();
       router.push("/");
+      toast.success("Store deleted");
     } catch (error) {
-      toast.error("Make sure you removed all products and categories first.");
+      toast.error(
+        "Make sure you removed all products, banners, and categories first."
+      );
     } finally {
       setLoading(false);
       setOpen(false);
-      toast.success("Store deleted");
     }
   };
 
