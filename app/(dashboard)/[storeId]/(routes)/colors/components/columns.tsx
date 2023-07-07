@@ -20,7 +20,7 @@ export const columns: ColumnDef<ColorColumn>[] = [
     accessorKey: "value",
     header: "Value",
     cell: ({ row }) => (
-      <div>
+      <div className="flex gap-x-2 items-center">
         {row.original.value}
         <div
           className="h-6 w-6 rounded-full border"
