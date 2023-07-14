@@ -17,6 +17,7 @@ model Store {
   colors      Color[]     @relation("StoreToColor") 
   products    Product[]   @relation("StoreToProduct") 
   orders      Order[]     @relation("StoreToOrder")
+  shipping    Shipping[]  @relation("StoreToShipping")
   createdAt   DateTime    @default(now()) 
   updatedAt   DateTime    @updatedAt()
 }
@@ -89,11 +90,15 @@ model Product {
   size        Size        @relation(fields: [sizeId], references: [id])
   colorId     String
   color       Color       @relation(fields: [colorId], references: [id])
+  shippingId  String
+  shipping    Shipping   @relation( fields: [shippingId], references: [id])
   images      Image[]
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+
+  @@index([shippingId])
   @@index([colorId])
   @@index([sizeId])
   @@index([storeId])
@@ -134,4 +139,22 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model Shipping {
+  id          String      @id @default(uuid())
+  name        String
+  storeId     String
+  store       Store       @relation("StoreToShipping", fields: [storeId], references: [id])
+  product     Product[]
+  isFixed     Boolean     @default(false)     
+  price       Decimal     @default(0)
+  width       Decimal?
+  length      Decimal?
+  height      Decimal?
+  weight      Decimal?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([storeId])
 }

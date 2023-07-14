@@ -17,6 +17,7 @@ export async function POST(
       categoryId,
       colorId,
       sizeId,
+      shippingId,
       images,
       isFeatured,
       isArchived,
@@ -44,6 +45,10 @@ export async function POST(
 
     if (!sizeId) {
       return new NextResponse("Size Id is required", { status: 400 });
+    }
+
+    if (!shippingId) {
+      return new NextResponse("Shipping Id is required", { status: 400 });
     }
 
     if (!images || !images.length) {
@@ -74,6 +79,7 @@ export async function POST(
         categoryId,
         colorId,
         sizeId,
+        shippingId,
         storeId: params.storeId,
         images: {
           createMany: {
@@ -121,6 +127,7 @@ export async function GET(
         category: true,
         color: true,
         size: true,
+        shipping: true,
       },
       orderBy: {
         createdAt: "desc",

@@ -20,6 +20,7 @@ export async function GET(
         category: true,
         size: true,
         color: true,
+        shipping: true,
       },
     });
 
@@ -44,6 +45,7 @@ export async function PATCH(
       categoryId,
       colorId,
       sizeId,
+      shippingId,
       images,
       isFeatured,
       isArchived,
@@ -71,6 +73,10 @@ export async function PATCH(
 
     if (!sizeId) {
       return new NextResponse("Size Id is required", { status: 400 });
+    }
+
+    if (!shippingId) {
+      return new NextResponse("Shipping Id is required", { status: 400 });
     }
 
     if (!images || !images.length) {
@@ -102,6 +108,7 @@ export async function PATCH(
         categoryId,
         colorId,
         sizeId,
+        shippingId,
         images: {
           deleteMany: {},
         },

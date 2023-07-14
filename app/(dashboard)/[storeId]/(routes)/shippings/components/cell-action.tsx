@@ -11,14 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ProductColumn } from "./columns";
+import { ShippingColumn } from "./columns";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
-  data: ProductColumn;
+  data: ShippingColumn;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -30,18 +30,20 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Product id copied to the clipboard !");
+    toast.success("Shipping id copied to the clipboard !");
   };
 
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/products/${data.id}`);
+      await axios.delete(`/api/${params.storeId}/shippings/${data.id}`);
 
       router.refresh();
-      toast.success("Product deleted.");
+      toast.success("Shipping deleted");
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error(
+        "Make sure you removed all products using this shipping first."
+      );
     } finally {
       setLoading(false);
       setOpen(false);
@@ -71,7 +73,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() =>
-              router.push(`/${params.storeId}/products/${data.id}`)
+              router.push(`/${params.storeId}/shippings/${data.id}`)
             }
           >
             <Edit className="mr-2 h-4 w-4" />

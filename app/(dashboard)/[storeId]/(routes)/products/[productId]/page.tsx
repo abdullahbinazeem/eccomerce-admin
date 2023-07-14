@@ -33,6 +33,12 @@ const ProductPage = async ({
     },
   });
 
+  const shippings = await prismadb.shipping.findMany({
+    where: {
+      storeId: params.storeId,
+    },
+  });
+
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -40,6 +46,7 @@ const ProductPage = async ({
           categories={categories}
           colors={colors}
           sizes={sizes}
+          shippings={shippings}
           initialData={product}
         />
       </div>
