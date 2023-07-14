@@ -46,8 +46,8 @@ export const columns: ColumnDef<ShippingColumn>[] = [
           <div></div>
         ) : (
           <div className="flex gap-x-2 items-center">
-            {row.original.length}" x {row.original.width}" x{" "}
-            {row.original.height}"
+            {row.original.length}&quot; x {row.original.width}&quot; x
+            {row.original.height}&quot;
           </div>
         )}
       </div>
