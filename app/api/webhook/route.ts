@@ -18,13 +18,13 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error: any) {
-    return new NextResponse("Webhook Error: " + error.message, { status: 400 });
+    return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
   const address = session?.customer_details?.address;
 
-  const adressComponents = [
+  const addressComponents = [
     address?.line1,
     address?.line2,
     address?.city,
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     address?.country,
   ];
 
-  const addressString = adressComponents.filter((c) => c !== null).join(", ");
+  const addressString = addressComponents.filter((c) => c !== null).join(", ");
 
   if (event.type === "checkout.session.completed") {
     const order = await prismadb.order.update({
@@ -50,14 +50,12 @@ export async function POST(req: Request) {
       },
     });
 
-    const productsIds = order.orderItems.map(
-      (orderItem) => orderItem.productId
-    );
+    const productIds = order.orderItems.map((orderItem) => orderItem.productId);
 
     await prismadb.product.updateMany({
       where: {
         id: {
-          in: [...productsIds],
+          in: [...productIds],
         },
       },
       data: {
