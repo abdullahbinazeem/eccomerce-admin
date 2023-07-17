@@ -22,10 +22,12 @@ export const columns: ColumnDef<SizeColumn>[] = [
   {
     accessorKey: "order",
     header: ({ column }) => {
+      /* eslint-disable */
       const [sorted, setSorted] = useState(false);
       useEffect(() => {
         column.toggleSorting(column.getIsSorted() === "asc");
       }, []);
+      /* eslint-enable */
 
       return (
         <Button

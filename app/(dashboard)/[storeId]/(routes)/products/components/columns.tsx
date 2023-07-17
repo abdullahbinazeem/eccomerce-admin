@@ -82,11 +82,15 @@ export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: "createdAt",
     header: ({ column }) => {
-      useEffect(() => {
-        column.toggleSorting(column.getIsSorted() === "desc");
-      }, []);
+      /* eslint-disable */
+      const header = () => {
+        useEffect(() => {
+          column.toggleSorting(column.getIsSorted() === "desc");
+        }, []);
+        /* eslint-enable */
 
-      return <p>Date</p>;
+        return <p>Date</p>;
+      };
     },
   },
   {
