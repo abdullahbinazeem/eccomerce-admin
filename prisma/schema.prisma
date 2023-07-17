@@ -57,6 +57,7 @@ model Size {
   products    Product[]
   name        String
   value       String
+  order       Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
  
@@ -83,6 +84,7 @@ model Product {
   categoryId  String
   category    Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
   name        String
+  description String?     @db.Text
   price       Decimal
   isFeatured  Boolean     @default(false)
   isArchived  Boolean     @default(false)

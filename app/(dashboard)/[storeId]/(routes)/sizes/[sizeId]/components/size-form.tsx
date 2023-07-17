@@ -28,6 +28,7 @@ import ImageUpload from "@/components/ui/image-upload";
 const formSchema = z.object({
   name: z.string().min(1),
   value: z.string().min(1),
+  order: z.coerce.number(),
 });
 
 type SizeFormValues = z.infer<typeof formSchema>;
@@ -50,10 +51,16 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 
   const form = useForm<SizeFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      value: "",
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          order: initialData.order ? initialData.order : 0,
+        }
+      : {
+          name: "",
+          value: "",
+          order: 0,
+        },
   });
 
   const onSubmit = async (data: SizeFormValues) => {
@@ -120,6 +127,28 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Order of Size</FormLabel>
+                  <p className="text-sm text-neutral-400">
+                    Order which sizes you want to show from top to bottom, 0 is
+                    the bottom and the higest # will shop at the top.
+                  </p>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      disabled={loading}
+                      placeholder="Order"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="name"

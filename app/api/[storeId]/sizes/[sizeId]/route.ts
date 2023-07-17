@@ -32,7 +32,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, value } = body;
+    const { name, value, order } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -44,6 +44,10 @@ export async function PATCH(
 
     if (!value) {
       return new NextResponse("Value is required", { status: 400 });
+    }
+
+    if (!order) {
+      return new NextResponse("Order is required", { status: 400 });
     }
 
     if (!params.sizeId) {
@@ -67,6 +71,7 @@ export async function PATCH(
         storeId: params.storeId,
       },
       data: {
+        order,
         name,
         value,
       },
