@@ -18,7 +18,7 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const { productIds } = await req.json();
+  const { productIds, variantIndexes } = await req.json();
 
   if (!productIds || productIds.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
@@ -32,18 +32,24 @@ export async function POST(
     },
     include: {
       shipping: true,
+      images: true,
+      colors: true,
     },
   });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
-  products.forEach((product) => {
+  products.forEach((product, index) => {
     line_items.push({
       quantity: 1,
       price_data: {
         currency: "CAD",
         product_data: {
           name: product.name,
+          description: `Color (${
+            product.colors[variantIndexes[index]].name
+          }) and Size (${product.size})`,
+          images: [product.images[0].url],
         },
         unit_amount: product.price.toNumber() * 100,
       },
@@ -70,8 +76,6 @@ export async function POST(
       },
     },
   });
-
-  console.log(shippingPrice);
 
   const session = await stripe.checkout.sessions.create({
     shipping_address_collection: {
@@ -102,7 +106,7 @@ export async function POST(
         shipping_rate_data: {
           type: `fixed_amount`,
           fixed_amount: {
-            amount: shippingPrice,
+            amount: Math.round(shippingPrice),
             currency: "CAD",
           },
           display_name: "Canada and US wide shipping",

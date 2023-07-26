@@ -5,16 +5,9 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import {
-  Product,
-  Image,
-  Color,
-  Category,
-  Size,
-  Shipping,
-} from "@prisma/client";
+import { Product, Image, Category, Shipping, Color } from "@prisma/client";
 import { Trash } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Heading } from "@/components/ui/heading";
@@ -41,18 +34,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   images: z.object({ url: z.string() }).array(),
   price: z.coerce.number().min(1),
+  size: z.string().min(1),
   categoryId: z.string().min(1),
-  colorId: z.string().min(1),
-  sizeId: z.string().min(1),
   shippingId: z.string().min(1),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
+  colors: z.array(
+    z.object({
+      name: z.string(),
+      value: z.string(),
+    })
+  ),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -61,23 +60,22 @@ interface ProductFormProps {
   initialData:
     | (Product & {
         images: Image[];
+        colors: Color[];
       })
     | null;
   categories: Category[];
-  colors: Color[];
-  sizes: Size[];
   shippings: Shipping[];
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
   initialData,
   categories,
-  colors,
-  sizes,
   shippings,
 }) => {
   const params = useParams();
   const router = useRouter();
+
+  console.log(initialData);
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -97,19 +95,30 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         }
       : {
           name: "",
+          colors: [
+            {
+              name: "black",
+              value: "#111",
+            },
+          ],
+          size: "",
           images: [],
           price: 0,
           categoryId: "",
           description: "",
-          colorId: "",
-          sizeId: "",
           shippingId: "",
           isFeatured: false,
           isArchived: false,
         },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    name: "colors",
+    control: form.control,
+  });
+
   const onSubmit = async (data: ProductFormValues) => {
+    console.log(data);
     try {
       setLoading(true);
       if (initialData) {
@@ -216,23 +225,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us a little bit about yourself"
-                      className="h-[50px] max-h-[200px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="price"
@@ -283,80 +276,25 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="sizeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
+            <div className="col-span-2">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a size"
-                        ></SelectValue>
-                      </SelectTrigger>
+                      <Textarea
+                        placeholder="Tell us a little bit about yourself"
+                        className="h-[150px] max-h-[300px]"
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {sizes.map((size) => (
-                        <SelectItem key={size.id} value={size.id}>
-                          {size.name} ({size.value})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="colorId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a color"
-                        ></SelectValue>
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {colors.map((color) => (
-                        <SelectItem
-                          className=""
-                          key={color.id}
-                          value={color.id}
-                        >
-                          <div className="flex items-center gap-x-2">
-                            <div
-                              className="h-4 w-4 rounded-full border"
-                              style={{ backgroundColor: color.value }}
-                            />
-                            {color.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="shippingId"
@@ -389,6 +327,116 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
+          </div>
+          <div className="grid grid-cols-3 gap-10">
+            <div className="col-span-2">
+              <div className="my-6">
+                <h2 className="text-xl mb-2">Colors</h2>
+                <FormDescription>
+                  Add colors names you want to show your shoppers, and a hex
+                  value for color.
+                </FormDescription>
+              </div>
+              {fields.map((field, index) => (
+                <>
+                  <div className="flex gap-x-8 mr-40 items-center">
+                    <div className="flex-grow">
+                      <FormField
+                        control={form.control}
+                        key={field.id}
+                        name={`colors.${index}.value`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={cn(index !== 0 && "sr-only")}>
+                              Hex Value
+                            </FormLabel>
+
+                            <div className="flex gap-x-6 items-center">
+                              <div
+                                className="h-6 w-6 flex-grow rounded-full border"
+                                style={{ backgroundColor: field.value }}
+                              />
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <FormField
+                        control={form.control}
+                        key={field.name + field.id}
+                        name={`colors.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={cn(index !== 0 && "sr-only")}>
+                              Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </>
+              ))}
+              <div className="flex gap-x-2 my-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => append({ value: "", name: "" })}
+                >
+                  Add Color
+                </Button>
+                {fields.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => remove(fields.length - 1)}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="my-6">
+                <h2 className="text-xl mb-2">Size</h2>
+                <FormDescription>
+                  Add a single size for your product, if you need to have more
+                  sizes create more products with different sizes.
+                </FormDescription>
+              </div>
+              <FormField
+                control={form.control}
+                name="size"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Size</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="max-w-[400px]"
+                        placeholder="Make a name for your size"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
               name="isFeatured"
@@ -432,9 +480,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <div>
+            <Button disabled={loading} className="ml-auto mt-10" type="submit">
+              {action}
+            </Button>
+          </div>
         </form>
       </Form>
       <Separator />

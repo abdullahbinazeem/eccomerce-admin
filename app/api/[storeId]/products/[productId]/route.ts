@@ -18,8 +18,7 @@ export async function GET(
       include: {
         images: true,
         category: true,
-        size: true,
-        color: true,
+        colors: true,
         shipping: true,
       },
     });
@@ -44,8 +43,8 @@ export async function PATCH(
       description,
       price,
       categoryId,
-      colorId,
-      sizeId,
+      size,
+      colors,
       shippingId,
       images,
       isFeatured,
@@ -60,6 +59,10 @@ export async function PATCH(
       return new NextResponse("Name is required", { status: 400 });
     }
 
+    if (!size) {
+      return new NextResponse("Size is required", { status: 400 });
+    }
+
     if (!description) {
       return new NextResponse("Description is required", { status: 400 });
     }
@@ -72,20 +75,16 @@ export async function PATCH(
       return new NextResponse("Category Id is required", { status: 400 });
     }
 
-    if (!colorId) {
-      return new NextResponse("Color Id is required", { status: 400 });
-    }
-
-    if (!sizeId) {
-      return new NextResponse("Size Id is required", { status: 400 });
-    }
-
     if (!shippingId) {
       return new NextResponse("Shipping Id is required", { status: 400 });
     }
 
     if (!images || !images.length) {
       return new NextResponse("Images are required", { status: 400 });
+    }
+
+    if (!colors || !colors.length) {
+      return new NextResponse("Colors are required", { status: 400 });
     }
 
     if (!params.productId) {
@@ -109,13 +108,15 @@ export async function PATCH(
       },
       data: {
         name,
+        size,
         description,
         price,
         categoryId,
-        colorId,
-        sizeId,
         shippingId,
         images: {
+          deleteMany: {},
+        },
+        colors: {
           deleteMany: {},
         },
         isFeatured,
@@ -131,6 +132,13 @@ export async function PATCH(
         images: {
           createMany: {
             data: [...images.map((image: { url: string }) => image)],
+          },
+        },
+        colors: {
+          createMany: {
+            data: [
+              ...colors.map((color: { name: string; value: string }) => color),
+            ],
           },
         },
       },

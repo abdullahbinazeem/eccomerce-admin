@@ -2,16 +2,17 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
-import { Size } from "@prisma/client";
 import { useEffect, useState } from "react";
+import { Color } from "@prisma/client";
+import { cn } from "@/lib/utils";
 
 export type ProductColumn = {
   id: string;
   name: string;
   price: string;
-  size: Size;
+  size: string;
+  colors: Color[];
   category: string;
-  color: string;
   shipping: string;
   isFeatured: boolean;
   isArchived: boolean;
@@ -32,12 +33,30 @@ export const columns: ColumnDef<ProductColumn>[] = [
     ),
   },
   {
-    accessorKey: "isArchived",
-    header: "Archived",
-  },
-  {
     accessorKey: "isFeatured",
-    header: "Featured",
+    header: "Status",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col gap-y-2 flex-wrap grow-0 max-w-[100px]">
+          <p
+            className={cn(
+              "text-xs p-2  font-semibold rounded-xl text-center grow-0",
+              row.original.isFeatured ? "bg-green-200" : "bg-red-300"
+            )}
+          >
+            {row.original.isFeatured ? "Featured" : "Not Featured"}
+          </p>
+          <p
+            className={cn(
+              "text-xs p-2  font-semibold  rounded-xl bg-neutral-500 text-center grow-0",
+              !row.original.isArchived ? "bg-green-200" : "bg-red-300"
+            )}
+          >
+            {row.original.isArchived ? "Archived" : "Showing"}
+          </p>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "price",
@@ -47,50 +66,47 @@ export const columns: ColumnDef<ProductColumn>[] = [
     accessorKey: "category",
     header: "Category",
   },
+
+  {
+    accessorKey: "colors",
+    header: "Colors",
+    cell: ({ row }) => {
+      return (
+        <div className="flex gap-x-1 flex-wrap">
+          {row.original.colors.map((color) => (
+            <div
+              key={color.id}
+              className="h-5 w-5  rounded-full border"
+              style={{ backgroundColor: color.value }}
+            />
+          ))}
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "size",
     header: "Size",
-    cell: ({ row }) => (
-      <div className="flex flex-col gap-y-2">
-        <p className="text-md font-medium">{row.original.size.name} </p>
-        <p className="text-xs truncate font-light max-w-[200px] text-neutral-500">
-          ({row.original.size.value})
-        </p>
-      </div>
-    ),
   },
   {
     accessorKey: "shipping",
     header: "Shipping",
-    cell: ({ row }) => (
-      <div className="max-w-[200px]">{row.original.shipping}</div>
-    ),
-  },
-  {
-    accessorKey: "color",
-    header: "Color",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-x-2 text-xs">
-        {row.original.color}
-        <div
-          className="h-4 w-4 rounded-full border"
-          style={{ backgroundColor: row.original.color }}
-        />
-      </div>
-    ),
+    cell: ({ row }) => {
+      console.log(row.original.colors);
+
+      return <div className="max-w-[200px]">{row.original.shipping}</div>;
+    },
   },
   {
     accessorKey: "createdAt",
     header: ({ column }) => {
       /* eslint-disable */
-      const header = () => {
-        useEffect(() => {
-          column.toggleSorting(column.getIsSorted() === "desc");
-        }, []);
-        /* eslint-enable */
+      useEffect(() => {
+        column.toggleSorting(column.getIsSorted() === "desc");
+      }, []);
+      /* eslint-enable */
 
-        return <p>Date</p>;
-      };
+      return <p>Date</p>;
     },
   },
   {
