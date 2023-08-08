@@ -34,6 +34,16 @@ export const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable columns={columns} data={data} searchKey="label" />
+      <p className="pb-10">
+        Need help ?{" "}
+        <a
+          className="cursor-pointer text-blue-600 underline"
+          href="https://www.youtube.com/watch?v=tbypYZcrun0&list=PL8vgCIQkRxLzJnYIxWPNFkxVHlfVpuhlo&index=2"
+          target="_blank"
+        >
+          Get help with this video tutorial
+        </a>
+      </p>
       <Heading title="API" description="API calls for billboards" />
       <Separator />
       <ApiList entityName="billboards" entityIdName="billboardId" />

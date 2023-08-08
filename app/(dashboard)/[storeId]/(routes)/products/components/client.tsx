@@ -32,6 +32,16 @@ export const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable columns={columns} data={data} searchKey="name" />
+      <p className="pb-10">
+        Need help ?{" "}
+        <a
+          className="cursor-pointer text-blue-600 underline"
+          href="https://www.youtube.com/watch?v=u5bjWeGHXN4&list=PL8vgCIQkRxLzJnYIxWPNFkxVHlfVpuhlo&index=5"
+          target="_blank"
+        >
+          Get help with this video tutorial
+        </a>
+      </p>
       <Heading title="API" description="API calls for Products" />
       <Separator />
       <ApiList entityName="products" entityIdName="productId" />

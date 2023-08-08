@@ -32,6 +32,16 @@ export const ShippingClient: React.FC<ShippingClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable columns={columns} data={data} searchKey="label" />
+      <p className="pb-10">
+        Need help ?{" "}
+        <a
+          className="cursor-pointer text-blue-600 underline"
+          href="https://www.youtube.com/watch?v=dwjJ5W_M5KE&list=PL8vgCIQkRxLzJnYIxWPNFkxVHlfVpuhlo&index=4"
+          target="_blank"
+        >
+          Get help with this video tutorial
+        </a>
+      </p>
       <Heading title="API" description="API calls for shippings" />
       <Separator />
       <ApiList entityName="shippings" entityIdName="sizeId" />

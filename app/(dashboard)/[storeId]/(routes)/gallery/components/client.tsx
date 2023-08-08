@@ -118,6 +118,16 @@ export const GalleryClient: React.FC<GalleryClientProps> = ({
           </div>
         </form>
       </Form>
+      <p className="pb-10">
+        Need help ?{" "}
+        <a
+          className="cursor-pointer text-blue-600 underline"
+          href="https://www.youtube.com/watch?v=_e-qS3QS30E&list=PL8vgCIQkRxLzJnYIxWPNFkxVHlfVpuhlo&index=6"
+          target="_blank"
+        >
+          Get help with this video tutorial
+        </a>
+      </p>
     </>
   );
 };

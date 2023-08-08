@@ -34,6 +34,16 @@ export const CategoryClient: React.FC<CategoryClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable columns={columns} data={data} searchKey="name" />
+      <p className="pb-10">
+        Need help ?{" "}
+        <a
+          className="cursor-pointer text-blue-600 underline"
+          href="https://www.youtube.com/watch?v=QamEaGSc3xA&list=PL8vgCIQkRxLzJnYIxWPNFkxVHlfVpuhlo&index=3"
+          target="_blank"
+        >
+          Get help with this video tutorial
+        </a>
+      </p>
       <Heading title="API" description="API calls for categories" />
       <Separator />
       <ApiList entityName="categories" entityIdName="categoryId" />

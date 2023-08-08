@@ -53,7 +53,6 @@ export async function POST(
         },
         unit_amount: product.price.toNumber() * 100,
       },
-      tax_rates: ["txr_1NS8IsGtCndKhAxTjzZTQHrT"],
     });
   });
 
