@@ -123,6 +123,9 @@ export async function POST(
       },
     ],
     line_items,
+    automatic_tax: {
+      enabled: true,
+    },
     mode: "payment",
     billing_address_collection: "required",
     phone_number_collection: {
